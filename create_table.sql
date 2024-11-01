@@ -36,19 +36,20 @@ CREATE TABLE currency_rates (
 CREATE TABLE wallets (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
-    balance INTEGER DEFAULT 0,
+    current_balance INTEGER DEFAULT 0,
     currency_rate INTEGER NOT NULL REFERENCES currency_rates(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modify_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
+
 -- Create the 'pockets' table
 CREATE TABLE pockets (
     id SERIAL PRIMARY KEY,
     wallet_id INTEGER NOT NULL REFERENCES wallets(id),
-    target_amount INTEGER DEFAULT 0,
-    current_amount INTEGER DEFAULT 0,
+    target_balance INTEGER DEFAULT 0,
+    current_balance INTEGER DEFAULT 0,
     description TEXT,
     emoji VARCHAR(10),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

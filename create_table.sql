@@ -6,7 +6,7 @@ CREATE TABLE users (
     pin INTEGER,
     quotes text,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
@@ -17,18 +17,17 @@ CREATE TABLE currencies (
     code VARCHAR(3) UNIQUE NOT NULL,
     symbol VARCHAR(5) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
 -- Create the 'currency_rates' table
 CREATE TABLE currency_rates (
     id SERIAL PRIMARY KEY,
-    currency INTEGER NOT NULL REFERENCES currencies(id),
+    currency_id INTEGER NOT NULL REFERENCES currencies(id),
     rates INTEGER NOT NULL,
-    effective_date TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
@@ -37,12 +36,11 @@ CREATE TABLE wallets (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
     current_balance INTEGER DEFAULT 0,
-    currency_rate INTEGER NOT NULL REFERENCES currency_rates(id),
+    currency_id INTEGER NOT NULL REFERENCES currencies(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
-
 
 -- Create the 'pockets' table
 CREATE TABLE pockets (
@@ -53,7 +51,7 @@ CREATE TABLE pockets (
     description TEXT,
     emoji VARCHAR(10),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
@@ -67,7 +65,7 @@ CREATE TABLE goals (
     description TEXT,
     attachment VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
@@ -80,7 +78,7 @@ CREATE TABLE transaction_records (
     amount INTEGER NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
@@ -89,7 +87,7 @@ CREATE TABLE notification_types (
     id SERIAL PRIMARY KEY,
     name VARCHAR NOT null,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
@@ -103,6 +101,7 @@ CREATE TABLE notifications (
     is_read BOOLEAN DEFAULT FALSE,
     sent_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modify_at TIMESTAMP,
+    modified_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
+

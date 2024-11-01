@@ -13,19 +13,19 @@ INSERT INTO currencies (name, code, symbol) VALUES
 ('Japanese Yen', 'JPY', '¥');
 
 -- Insert data into 'currency_rates' table
-INSERT INTO currency_rates (currency, rates, effective_date) VALUES
-(1, 100, '2024-01-01'),
-(2, 200, '2024-02-01'),
-(3, 300, '2024-03-01');
+INSERT INTO currency_rates (currency, rates) VALUES
+(1, 100),
+(2, 200),
+(3, 300);
 
 -- Insert data into 'wallets' table
-INSERT INTO wallets (user_id, balance, currency_rate) VALUES
+INSERT INTO wallets (user_id, current_balance, currency_id) VALUES
 (1, 1000, 1),
 (2, 2000, 2),
 (3, 3000, 3);
 
 -- Insert data into 'pockets' table
-INSERT INTO pockets (wallet_id, target_amount, current_amount, description, emoji) VALUES
+INSERT INTO pockets (wallet_id, target_balance, current_balance, description, emoji) VALUES
 (1, 100, 50, 'Pocket for savings', '🏦'),
 (2, 200, 150, 'Pocket for travel', '✈️'),
 (3, 300, 250, 'Pocket for gifts', '🎁');

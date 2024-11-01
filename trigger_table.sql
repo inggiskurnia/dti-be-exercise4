@@ -95,6 +95,80 @@ AFTER INSERT OR UPDATE ON currency_rates
 FOR EACH ROW
 EXECUTE FUNCTION update_balance_currency_rate();
 
+-- Update current_balance based on the new currency_rate
+CREATE OR REPLACE FUNCTION update_balance_currency_change()
+RETURNS TRIGGER AS $$
+BEGIN
+	
+	
+    -- Update wallets
+    UPDATE wallets
+    SET current_balance = current_balance * NEW.rates,
+        modified_at = NOW()
+    WHERE currency_id = NEW.currency_id;
+
+    -- Update pockets and goals if currency_id matches
+    IF EXISTS (SELECT 1 FROM wallets WHERE currency_id = NEW.currency_id) THEN
+        UPDATE pockets
+        SET current_balance = current_balance * NEW.rates,
+            target_balance = target_balance * NEW.rates,
+            modified_at = NOW()
+        WHERE wallet_id IN (SELECT id FROM wallets WHERE currency_id = NEW.currency_id);
+
+        UPDATE goals
+        SET current_balance = current_balance * NEW.rates,
+            target_balance = target_balance * NEW.rates,
+            modified_at = NOW()
+        WHERE wallet_id IN (SELECT id FROM wallets WHERE currency_id = NEW.currency_id);
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger for updating current_balance
+CREATE OR REPLACE FUNCTION update_balance_currency_rate()
+RETURNS TRIGGER AS $$
+DECLARE
+    latest_rate INTEGER;
+BEGIN
+    -- Fetch the latest currency rate
+    latest_rate := (SELECT rates FROM currency_rates WHERE currency_id = NEW.currency_id ORDER BY modified_at DESC LIMIT 1);
+
+    -- Update wallets
+    UPDATE wallets
+    SET current_balance = current_balance * latest_rate,
+        modified_at = NOW()
+    WHERE id = NEW.id;
+
+    -- Update pockets based on wallet_id and latest currency rate
+    UPDATE pockets
+    SET current_balance = current_balance * latest_rate,
+        target_balance = target_balance * latest_rate,
+        modified_at = NOW()
+    WHERE wallet_id = NEW.id;
+
+    -- Update goals based on wallet_id and latest currency rate
+    UPDATE goals
+    SET current_balance = current_balance * latest_rate,
+        target_balance = target_balance * latest_rate,
+        modified_at = NOW()
+    WHERE wallet_id = NEW.id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger for updating current_balance
+CREATE TRIGGER trigger_update_balance_on_currency_change
+AFTER UPDATE OF currency_id ON wallets
+FOR EACH ROW
+WHEN (OLD.currency_id IS DISTINCT FROM NEW.currency_id)
+EXECUTE FUNCTION update_balance_currency_rate();
+
+
+
+
 
 
 
